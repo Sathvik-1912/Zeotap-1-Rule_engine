@@ -41,7 +41,7 @@ Ensure you have the following installed on your system:
 
 2. **Set up Python Environment**
 
-   Install dependencies by running:
+
 
    Install Python dependencies via `pip`:
 
