@@ -48,6 +48,13 @@ Ensure you have the following installed on your system:
    source venv/bin/activate  # For Windows use: venv\Scripts\activate
    pip install -r requirements.txt
    ```
+   OR
+
+   Install Python dependencies via `pip`:
+
+   ```bash
+     pip install flask flask-cors sqlite3
+   ```
 
 
 ### Running the Application
