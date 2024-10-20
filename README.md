@@ -64,7 +64,7 @@ Ensure you have the following installed on your system:
 ---
 
 ## Usage Instructions
-
+Warning: it supports only >,<,== oprators and can combine any two
 1. **Create Rule**: Enter a rule (e.g., `age > 30`) and click "Create Rule". The rule will be saved and displayed in the dropdowns.
 2. **Combine Rules**: Select multiple rules from the dropdown, click "Combine Rules", and they will be combined with the logical operator (default is AND).
 3. **Evaluate Rule**: Select a rule, input user data in JSON format (e.g., `{"age": 25, "salary": 50000}`), and click "Evaluate Rule" to get the result.
