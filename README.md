@@ -43,13 +43,6 @@ Ensure you have the following installed on your system:
 
    Install dependencies by running:
 
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # For Windows use: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
-   OR
-
    Install Python dependencies via `pip`:
 
    ```bash
