@@ -53,7 +53,7 @@ Ensure you have the following installed on your system:
    Install Python dependencies via `pip`:
 
    ```bash
-     pip install flask flask-cors sqlite3
+     pip install flask flask-cors 
    ```
 
 
