@@ -49,14 +49,6 @@ Ensure you have the following installed on your system:
    pip install -r requirements.txt
    ```
 
-3. **Install Frontend Dependencies**
-
-   You need **Bootstrap** for styling. Include Bootstrap via CDN in the `index.html` file (already included in your case):
-   ```html
-   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-   ```
-
-
 
 ### Running the Application
 
