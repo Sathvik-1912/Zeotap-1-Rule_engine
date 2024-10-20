@@ -60,25 +60,14 @@ Ensure you have the following installed on your system:
 
 ### Running the Application
 
-1. **Start the Backend Server**:
-
-   To start the Flask backend, run:
+  
 
    ```bash
    python app.py
    ```
 
-   The server will be running at `http://127.0.0.1:5000/`.
+   The application will be running at `http://127.0.0.1:5000/`.
 
-2. **Run Frontend**
-
-   Simply open `index.html` in your browser or serve it through a simple server, like Python’s HTTP server:
-
-   ```bash
-   python3 -m http.server 5000
-   ```
-
-   The frontend will be available at `http://127.0.0.1:5000`.
 
 ---
 
