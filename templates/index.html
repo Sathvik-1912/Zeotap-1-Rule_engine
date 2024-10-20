@@ -9,21 +9,18 @@
 <body>
     <div class="container">
         <h1 class="mt-5">Rule Management System</h1>
-
-        
         <div class="form-section mt-4">
             <h2>Create a New Rule</h2>
             <form id="create-rule-form">
                 <div class="form-group">
                     <label for="rule-input">Enter Rule:</label>
                     <input type="text" id="rule-input" class="form-control" placeholder="Enter rule, e.g., age > 30" required>
+                    <small class="form-text text-muted">Valid attributes: age, department, salary, experience</small>
                 </div>
                 <button type="submit" class="btn btn-primary">Create Rule</button>
             </form>
             <div id="create-result" class="result mt-4"></div>
         </div>
-
-       
         <div class="form-section mt-4">
             <h2>Combine Rules</h2>
             <form id="combine-rules-form">
@@ -31,12 +28,17 @@
                     <label for="combine-rule-select">Select Rules to Combine:</label>
                     <select id="combine-rule-select" class="form-control" name="rule_ids" multiple required></select>
                 </div>
+                <div class="form-group">
+                    <label for="operator-select">Select Combination Operator:</label>
+                    <select id="operator-select" class="form-control">
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                    </select>
+                </div>
                 <button type="submit" class="btn btn-warning">Combine Rules</button>
             </form>
             <div id="combine-result" class="result mt-4"></div>
         </div>
-
-       
         <div class="form-section mt-4">
             <h2>Evaluate Rule</h2>
             <form id="evaluate-rule-form">
@@ -53,9 +55,7 @@
             <div id="evaluate-result" class="result mt-4"></div>
         </div>
     </div>
-
     <script>
-        
         function loadRules() {
             fetch('http://127.0.0.1:5000/get_rules')
                 .then(response => response.json())
@@ -69,7 +69,6 @@
                         option.value = rule.id;
                         option.textContent = rule.rule_string;
                         ruleSelect.appendChild(option);
-
                         const combineOption = document.createElement('option');
                         combineOption.value = rule.id;
                         combineOption.textContent = rule.rule_string;
@@ -81,12 +80,14 @@
 
         document.addEventListener('DOMContentLoaded', function () {
             loadRules();
-
-            
             document.getElementById('create-rule-form').addEventListener('submit', function (event) {
                 event.preventDefault();
                 const ruleInput = document.getElementById('rule-input').value;
-
+                const validSyntax = /[><=]/.test(ruleInput);
+                if (!validSyntax) {
+                    document.getElementById('create-result').textContent = 'Error: Invalid syntax. Use operators like >, <, ==.';
+                    return;
+                }
                 fetch('http://127.0.0.1:5000/create_rule', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -95,37 +96,46 @@
                     .then(response => response.json())
                     .then(data => {
                         document.getElementById('create-result').textContent = data.message;
-                        loadRules();  
+                        loadRules();
                     })
                     .catch(error => console.error('Error creating rule:', error));
             });
 
-            
             document.getElementById('combine-rules-form').addEventListener('submit', function (event) {
                 event.preventDefault();
                 const selectedOptions = document.getElementById('combine-rule-select').selectedOptions;
+                const operator = document.getElementById('operator-select').value;
+                if (selectedOptions.length === 0) {
+                    document.getElementById('combine-result').textContent = 'Please select at least one rule to combine.';
+                    return;
+                }
                 const ruleIds = Array.from(selectedOptions).map(option => parseInt(option.value));
-
                 fetch('http://127.0.0.1:5000/combine_rules', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ rule_ids: ruleIds })
+                    body: JSON.stringify({ rule_ids: ruleIds, operator: operator })
                 })
                     .then(response => response.json())
                     .then(data => {
-                        document.getElementById('combine-result').textContent = 'Combined rule: ' + data.combined_rule;
-                        alert(data.message);
-                        loadRules(); 
+                        if (data.combined_rule_string) {
+                            document.getElementById('combine-result').textContent = 'Combined rule added: ' + data.combined_rule_string;
+                        } else {
+                            document.getElementById('combine-result').textContent = 'Error combining rules: ' + data.error;
+                        }
                     })
                     .catch(error => console.error('Error combining rules:', error));
             });
 
-           
             document.getElementById('evaluate-rule-form').addEventListener('submit', function (event) {
                 event.preventDefault();
                 const ruleId = parseInt(document.getElementById('rule-select').value);
-                const userData = JSON.parse(document.getElementById('user-data').value);
-
+                let userData;
+                try {
+                    userData = JSON.parse(document.getElementById('user-data').value);
+                } catch (error) {
+                    document.getElementById('evaluate-result').textContent = 'Invalid JSON format for user data. Please check your input.';
+                    return;
+                }
                 fetch('http://127.0.0.1:5000/evaluate_rule', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
