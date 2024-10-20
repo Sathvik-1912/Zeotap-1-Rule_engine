@@ -62,7 +62,7 @@ Ensure you have the following installed on your system:
   
 
    ```bash
-   python app.py
+   python rule_engine.py
    ```
 
    The application will be running at `http://127.0.0.1:5000/`.
