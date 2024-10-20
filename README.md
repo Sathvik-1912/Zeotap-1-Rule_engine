@@ -35,8 +35,8 @@ Ensure you have the following installed on your system:
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/your-repo/rule-management-system.git
-   cd rule-management-system
+   git clone https://github.com/Sathvik-1912/Zeotap-1-Rule_engine.git
+   cd Zeotap-1-Rule_engine
    ```
 
 2. **Set up Python Environment**
