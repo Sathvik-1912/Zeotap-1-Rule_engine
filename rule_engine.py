@@ -211,6 +211,9 @@ def combine_rules_api():
         return jsonify({'combined_rule': combined_rule_string, 'message': 'Combined rule created and saved successfully'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 if __name__ == '__main__':
     setup_db() 
