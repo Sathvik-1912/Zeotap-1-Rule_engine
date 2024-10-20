@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Management System</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5">Rule Management System</h1>
+
+        
+        <div class="form-section mt-4">
+            <h2>Create a New Rule</h2>
+            <form id="create-rule-form">
+                <div class="form-group">
+                    <label for="rule-input">Enter Rule:</label>
+                    <input type="text" id="rule-input" class="form-control" placeholder="Enter rule, e.g., age > 30" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Rule</button>
+            </form>
+            <div id="create-result" class="result mt-4"></div>
+        </div>
+
+       
+        <div class="form-section mt-4">
+            <h2>Combine Rules</h2>
+            <form id="combine-rules-form">
+                <div class="form-group">
+                    <label for="combine-rule-select">Select Rules to Combine:</label>
+                    <select id="combine-rule-select" class="form-control" name="rule_ids" multiple required></select>
+                </div>
+                <button type="submit" class="btn btn-warning">Combine Rules</button>
+            </form>
+            <div id="combine-result" class="result mt-4"></div>
+        </div>
+
+       
+        <div class="form-section mt-4">
+            <h2>Evaluate Rule</h2>
+            <form id="evaluate-rule-form">
+                <div class="form-group">
+                    <label for="rule-select">Select Rule:</label>
+                    <select id="rule-select" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="user-data">User Data (JSON format):</label>
+                    <textarea id="user-data" class="form-control" rows="3" placeholder='e.g., {"age": 25, "salary": 50000, "experience": 5}' required></textarea>
+                </div>
+                <button type="submit" class="btn btn-success">Evaluate Rule</button>
+            </form>
+            <div id="evaluate-result" class="result mt-4"></div>
+        </div>
+    </div>
+
+    <script>
+        
+        function loadRules() {
+            fetch('http://127.0.0.1:5000/get_rules')
+                .then(response => response.json())
+                .then(data => {
+                    const ruleSelect = document.getElementById('rule-select');
+                    const combineRuleSelect = document.getElementById('combine-rule-select');
+                    ruleSelect.innerHTML = '';
+                    combineRuleSelect.innerHTML = '';
+                    data.rules.forEach(rule => {
+                        const option = document.createElement('option');
+                        option.value = rule.id;
+                        option.textContent = rule.rule_string;
+                        ruleSelect.appendChild(option);
+
+                        const combineOption = document.createElement('option');
+                        combineOption.value = rule.id;
+                        combineOption.textContent = rule.rule_string;
+                        combineRuleSelect.appendChild(combineOption);
+                    });
+                })
+                .catch(error => console.error('Error loading rules:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            loadRules();
+
+            
+            document.getElementById('create-rule-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const ruleInput = document.getElementById('rule-input').value;
+
+                fetch('http://127.0.0.1:5000/create_rule', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rule: ruleInput })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('create-result').textContent = data.message;
+                        loadRules();  
+                    })
+                    .catch(error => console.error('Error creating rule:', error));
+            });
+
+            
+            document.getElementById('combine-rules-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const selectedOptions = document.getElementById('combine-rule-select').selectedOptions;
+                const ruleIds = Array.from(selectedOptions).map(option => parseInt(option.value));
+
+                fetch('http://127.0.0.1:5000/combine_rules', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rule_ids: ruleIds })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('combine-result').textContent = 'Combined rule: ' + data.combined_rule;
+                        alert(data.message);
+                        loadRules(); 
+                    })
+                    .catch(error => console.error('Error combining rules:', error));
+            });
+
+           
+            document.getElementById('evaluate-rule-form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                const ruleId = parseInt(document.getElementById('rule-select').value);
+                const userData = JSON.parse(document.getElementById('user-data').value);
+
+                fetch('http://127.0.0.1:5000/evaluate_rule', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ rule_id: ruleId, data: userData })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('evaluate-result').textContent = 'Evaluation result: ' + data.result;
+                    })
+                    .catch(error => console.error('Error evaluating rule:', error));
+            });
+        });
+    </script>
+</body>
+</html>
